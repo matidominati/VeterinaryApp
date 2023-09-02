@@ -14,12 +14,7 @@ Make sure you have the following tools installed:
 
 1. **Getting the Source Code:**
 
-   Clone this repository to your computer or download the ZIP archive:
-
-   ```bash
-   git clone <repository-url>
-   cd reward-management-app
-   ```
+   Clone this repository to your computer
 
 2. **Configuring the Database:**
 
@@ -46,7 +41,7 @@ Make sure you have the following tools installed:
 
 4. **Accessing the Application:**
 
-   Once the build and startup process is complete, your "Reward Management" application will be accessible at [http://localhost:8080](http://localhost:8080).
+   Once the build and startup process is complete, your "Veterinary App" application will be accessible at [http://localhost:8080](http://localhost:8080).
 
 5. **Stopping the Application:**
 
