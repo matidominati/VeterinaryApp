@@ -25,6 +25,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client getClientById(long id) {
+        System.out.println("XXX");
         return clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
     }
