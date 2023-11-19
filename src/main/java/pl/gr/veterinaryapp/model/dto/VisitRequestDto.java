@@ -25,13 +25,4 @@ public class VisitRequestDto {
     private BigDecimal price;
     private VisitType visitType;
     private OperationType operationType;
-
-    public static class VisitRequestDtoBuilder {
-
-        private Long vetId = 1;
-        private Long petId = 1;
-        private OffsetDateTime startDateTime = OffsetDateTime.MIN;
-        private Duration duration = Duration.ZERO;
-        private BigDecimal price = BigDecimal.ZERO;
-    }
 }

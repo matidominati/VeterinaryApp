@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Component
@@ -20,7 +21,19 @@ public class DataValidator {
         return entity.get();
     }
 
-    public static void checkData(String name, String surname) {
+    public static void validateName(String name) {
+        if (name == null) {
+            throw new IncorrectDataException("Name cannot be null.");
+        }
+    }
+
+    public static void validateBirthDate(LocalDate birthDate) {
+        if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+            throw new IncorrectDataException("Incorrect birth date provided");
+        }
+    }
+
+    public static void validateNameOrSurname(String name, String surname) {
         if (name == null || surname == null) {
             throw new IncorrectDataException("Name and Surname should not be null.");
         }

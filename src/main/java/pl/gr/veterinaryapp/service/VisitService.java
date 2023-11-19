@@ -11,15 +11,10 @@ import java.util.List;
 public interface VisitService {
 
     void deleteVisit(Long id);
-
-    List<VisitResponseDto> getAllVisits(UserDto user);
-
-    VisitResponseDto createVisit(UserDto user, VisitRequestDto visitRequestDto);
-
+    List<VisitResponseDto> getAllVisits(User user);
+    VisitResponseDto createVisit(User user, VisitRequestDto visitRequestDto);
     VisitResponseDto finalizeVisit(VisitEditDto visitEditDto);
-
-    VisitResponseDto getVisitById(UserDto user, Long id);
-
+    VisitResponseDto getVisitById(User user, Long id);
     List<AvailableVisitDto> getAvailableVisits(
             OffsetDateTime startDateTime,
             OffsetDateTime endDateTime,

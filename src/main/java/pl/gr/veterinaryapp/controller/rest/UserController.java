@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.gr.veterinaryapp.mapper.VetAppUserMapper;
-import pl.gr.veterinaryapp.model.dto.UserDto;
+import pl.gr.veterinaryapp.model.dto.UserRequestDto;
+import pl.gr.veterinaryapp.model.dto.UserResponseDto;
 import pl.gr.veterinaryapp.service.UserService;
 
 import java.util.List;
@@ -20,16 +21,15 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final VetAppUserMapper mapper;
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return mapper.mapAsList(userService.getAllUsers());
+    public List<UserResponseDto> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto user) {
-        return mapper.map(userService.createUser(user));
+    public UserResponseDto createUser(@RequestBody UserRequestDto user) {
+        return userService.createUser(user);
     }
 
     @DeleteMapping("/{id}")
@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getUser(@PathVariable Long id) {
-        return mapper.map(userService.getUser(id));
+    public UserResponseDto getUser(@PathVariable Long id) {
+        return userService.getUser(id);
     }
 }

@@ -9,10 +9,7 @@ import java.util.List;
 public interface AnimalService {
 
     AnimalResponseDto getAnimalById(Long id);
-
     AnimalResponseDto createAnimal(AnimalRequestDto animalRequestDTO);
-
     void deleteAnimal(Long id);
-
     List<AnimalResponseDto> getAllAnimals();
 }

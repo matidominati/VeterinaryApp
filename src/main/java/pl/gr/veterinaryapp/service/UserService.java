@@ -1,18 +1,14 @@
 package pl.gr.veterinaryapp.service;
 
-import pl.gr.veterinaryapp.model.dto.UserDto;
-import pl.gr.veterinaryapp.model.dto.VetAppUserResponseDto;
-import pl.gr.veterinaryapp.model.entity.VetAppUser;
+import pl.gr.veterinaryapp.model.dto.UserRequestDto;
+import pl.gr.veterinaryapp.model.dto.UserResponseDto;
 
 import java.util.List;
 
 public interface UserService {
 
-    List<VetAppUserResponseDto> getAllUsers();
-
-    VetAppUserResponseDto getUser(Long id);
-
-    VetAppUserResponseDto createUser(UserDto user);
-
+    List<UserResponseDto> getAllUsers();
+    UserResponseDto getUser(Long id);
+    UserResponseDto createUser(UserRequestDto user);
     void deleteUser(Long id);
 }

@@ -9,10 +9,7 @@ import java.util.List;
 public interface ClientService {
 
     ClientResponseDto getClientById(Long id);
-
     ClientResponseDto createClient(ClientRequestDto clientRequestDTO);
-
     void deleteClient(Long id);
-
     List<ClientResponseDto> getAllClients();
 }

@@ -38,7 +38,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class VisitRestController {
 
     private final VisitService visitService;
-    private final VisitMapper mapper;
 
     @DeleteMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public void delete(@PathVariable Long id) {
@@ -47,7 +46,7 @@ public class VisitRestController {
 
     @GetMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public VisitResponseDto getVisit(@AuthenticationPrincipal User user, @PathVariable Long id) {
-        var visit = mapper.map(visitService.getVisitById(user, id));
+        var visit = visitService.getVisitById(user, id);
         addLinks(visit);
         return visit;
     }
@@ -80,7 +79,7 @@ public class VisitRestController {
 
     @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public List<VisitResponseDto> getAllVisits(@AuthenticationPrincipal User user) {
-        var visits = mapper.mapAsList(visitService.getAllVisits(user));
+        var visits = (visitService.getAllVisits(user));
 
         for (var visit : visits) {
             addLinks(visit);
@@ -95,14 +94,14 @@ public class VisitRestController {
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public VisitResponseDto createVisit(@AuthenticationPrincipal User user,
                                         @RequestBody VisitRequestDto visitRequestDto) {
-        var visit = mapper.map(visitService.createVisit(user, visitRequestDto));
+        var visit = visitService.createVisit(user, visitRequestDto);
         addLinks(visit);
         return visit;
     }
 
     @PatchMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public VisitResponseDto finalizeVisit(@RequestBody VisitEditDto visitEditDto) {
-        var visit = mapper.map(visitService.finalizeVisit(visitEditDto));
+        var visit = visitService.finalizeVisit(visitEditDto);
         addLinks(visit);
         return visit;
     }

@@ -3,7 +3,6 @@ package pl.gr.veterinaryapp.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
 import pl.gr.veterinaryapp.mapper.ClientMapper;
 import pl.gr.veterinaryapp.model.dto.ClientRequestDto;
@@ -13,7 +12,6 @@ import pl.gr.veterinaryapp.model.entity.VetAppUser;
 import pl.gr.veterinaryapp.repository.ClientRepository;
 import pl.gr.veterinaryapp.repository.UserRepository;
 import pl.gr.veterinaryapp.service.ClientService;
-import pl.gr.veterinaryapp.service.validator.DataValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,15 +42,13 @@ public class ClientServiceImpl implements ClientService {
     @Transactional
     @Override
     public ClientResponseDto createClient(ClientRequestDto clientRequestDTO) {
-        checkData(clientRequestDTO.getName(), clientRequestDTO.getSurname());
+        validateNameOrSurname(clientRequestDTO.getName(), clientRequestDTO.getSurname());
         VetAppUser user = userRepository.findByUsername(clientRequestDTO.getUsername())
-                .orElse(null);
-
+                .orElseThrow(() -> new  ResourceNotFoundException("User not found for username: " + clientRequestDTO.getUsername()));
         Client client = mapper.map(clientRequestDTO);
         client.setUser(user);
         clientRepository.save(client);
-
-        return client;
+        return mapper.map(client);
     }
 
     @Transactional

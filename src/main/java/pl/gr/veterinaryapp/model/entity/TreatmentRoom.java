@@ -1,17 +1,16 @@
 package pl.gr.veterinaryapp.model.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Immutable
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "treatment_rooms")
 public class TreatmentRoom {
@@ -21,4 +20,17 @@ public class TreatmentRoom {
     private Long id;
     @NotNull
     private String name;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TreatmentRoom that = (TreatmentRoom) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

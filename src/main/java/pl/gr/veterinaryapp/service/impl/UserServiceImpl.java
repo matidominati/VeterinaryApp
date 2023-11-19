@@ -7,13 +7,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
-import pl.gr.veterinaryapp.model.dto.UserDto;
+import pl.gr.veterinaryapp.mapper.VetAppUserMapper;
+import pl.gr.veterinaryapp.model.dto.UserRequestDto;
+import pl.gr.veterinaryapp.model.dto.UserResponseDto;
 import pl.gr.veterinaryapp.model.entity.Role;
 import pl.gr.veterinaryapp.model.entity.VetAppUser;
 import pl.gr.veterinaryapp.repository.UserRepository;
 import pl.gr.veterinaryapp.service.UserService;
+import pl.gr.veterinaryapp.service.validator.DataValidator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,21 +25,24 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final VetAppUserMapper mapper;
 
     @Override
-    public List<VetAppUser> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(mapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public VetAppUser getUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
+    public UserResponseDto getUser(Long id) {
+        VetAppUser user = DataValidator.findByIdOrThrow(id, userRepository);
+        return mapper.mapToDto(user);
     }
 
     @Override
     @Transactional
-    public VetAppUser createUser(UserDto user) {
+    public UserResponseDto createUser(UserRequestDto user) {
         userRepository.findByUsername(user.getUsername())
                 .ifPresent(u -> {
                     throw new IncorrectDataException("Username exists.");
@@ -44,7 +51,8 @@ public class UserServiceImpl implements UserService {
         newVetAppUser.setUsername(user.getUsername());
         newVetAppUser.setPassword(encoder.encode(user.getPassword()));
         newVetAppUser.setRole(new Role(user.getRole()));
-        return userRepository.save(newVetAppUser);
+        userRepository.save(newVetAppUser);
+        return mapper.mapToDto(newVetAppUser);
     }
 
     @Override

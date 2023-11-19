@@ -28,7 +28,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class PetRestController {
 
     private final PetService petService;
-    private final PetMapper mapper;
 
     @DeleteMapping(path = "/{id}")
     public void delete(@PathVariable Long id) {
@@ -37,30 +36,27 @@ public class PetRestController {
 
     @GetMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     public PetResponseDto getPet(@AuthenticationPrincipal User user, @PathVariable Long id) {
-        var pet = mapper.map(petService.getPetById(user, id));
+        var pet = petService.getPetById(user, id);
         addLinks(pet);
         return pet;
     }
 
     @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public List<PetResponseDto> getAllPets(@AuthenticationPrincipal User user) {
-        var pets = mapper.mapAsList(petService.getAllPets(user));
-
+        var pets = petService.getAllPets(user);
         for (var pet : pets) {
             addLinks(pet);
             var link = linkTo(methodOn(PetRestController.class).getPet(user, pet.getId()))
                     .withSelfRel();
             pet.add(link);
         }
-
         return pets;
     }
 
     @PostMapping(produces = MediaTypes.HAL_JSON_VALUE)
     public PetResponseDto createPet(@AuthenticationPrincipal User user, @RequestBody PetRequestDto petRequestDto) {
         System.out.println(user);
-
-        var pet = mapper.map(petService.createPet(user, petRequestDto));
+        var pet = petService.createPet(user, petRequestDto);
         addLinks(pet);
         return pet;
     }

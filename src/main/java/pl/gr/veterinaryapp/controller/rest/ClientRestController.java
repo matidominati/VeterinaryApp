@@ -21,7 +21,6 @@ import java.util.List;
 public class ClientRestController {
 
     private final ClientService clientService;
-    private final ClientMapper mapper;
 
     @GetMapping("/{id}")
     public ClientResponseDto getClient(@PathVariable Long id) {

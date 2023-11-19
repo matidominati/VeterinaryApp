@@ -9,10 +9,7 @@ import java.util.List;
 public interface VetService {
 
     VetResponseDto getVetById(Long id);
-
     List<VetResponseDto> getAllVets();
-
     VetResponseDto createVet(VetRequestDto vetRequestDTO);
-
     void deleteVet(Long id);
 }
