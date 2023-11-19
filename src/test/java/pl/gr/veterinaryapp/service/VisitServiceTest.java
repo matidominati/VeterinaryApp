@@ -63,9 +63,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class VisitServiceTest {
 
-    private static final long VISIT_ID = 1L;
-    private static final long PET_ID = 1L;
-    private static final long VET_ID = 1L;
+    private static final Long VISIT_ID = 1L;
+    private static final Long PET_ID = 1L;
+    private static final Long VET_ID = 1L;
     private static final String VISIT_DESCRIPTION = "description";
     private static final User USER = new User("name", "passwd", Collections.emptySet());
 
@@ -443,8 +443,8 @@ class VisitServiceTest {
 
     @Test
     void getAvailableVisits_WithVetIdsProvided_Returned() {
-        final long vet1stId = 1L;
-        final long vet2ndId = 2L;
+        final Long vet1stId = 1L;
+        final Long vet2ndId = 2L;
         var vetIds = Set.of(vet1stId, vet2ndId);
         final var startDateTime = OffsetDateTime.now(fixedClock);
         final var endDateTime = startDateTime.plusMinutes(45);
@@ -485,8 +485,8 @@ class VisitServiceTest {
 
     @Test
     void getAvailableVisits_WithEmptyVetIds_Returned() {
-        final long vet1stId = 1L;
-        final long vet2ndId = 2L;
+        final Long vet1stId = 1L;
+        final Long vet2ndId = 2L;
         var vetIds = Set.of(vet1stId, vet2ndId);
         final var startDateTime = OffsetDateTime.now(fixedClock);
         final var endDateTime = startDateTime.plusMinutes(45);

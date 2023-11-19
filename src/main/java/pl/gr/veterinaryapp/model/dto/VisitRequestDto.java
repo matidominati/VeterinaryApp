@@ -18,8 +18,8 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class VisitRequestDto {
 
-    private long vetId;
-    private long petId;
+    private Long vetId;
+    private Long petId;
     private OffsetDateTime startDateTime;
     private Duration duration;
     private BigDecimal price;
@@ -28,8 +28,8 @@ public class VisitRequestDto {
 
     public static class VisitRequestDtoBuilder {
 
-        private long vetId = 1;
-        private long petId = 1;
+        private Long vetId = 1;
+        private Long petId = 1;
         private OffsetDateTime startDateTime = OffsetDateTime.MIN;
         private Duration duration = Duration.ZERO;
         private BigDecimal price = BigDecimal.ZERO;

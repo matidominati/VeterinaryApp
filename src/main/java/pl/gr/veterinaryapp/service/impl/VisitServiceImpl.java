@@ -46,7 +46,7 @@ public class VisitServiceImpl implements VisitService {
     private final Clock systemClock;
 
     @Override
-    public Visit getVisitById(User user, long id) {
+    public Visit getVisitById(User user, Long id) {
         Visit visit = visitRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
 
@@ -105,7 +105,7 @@ public class VisitServiceImpl implements VisitService {
         return visitRepository.save(newVisit);
     }
 
-    private void validateVisitDate(long vetId, OffsetDateTime startDateTime, Duration duration) {
+    private void validateVisitDate(Long vetId, OffsetDateTime startDateTime, Duration duration) {
         var nowZoned = OffsetDateTime.now(systemClock);
 
         if (startDateTime.isBefore(nowZoned)) {
@@ -153,7 +153,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Transactional
     @Override
-    public void deleteVisit(long id) {
+    public void deleteVisit(Long id) {
         Visit result = visitRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
         visitRepository.delete(result);

@@ -36,7 +36,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Pet getPetById(User user, long id) {
+    public Pet getPetById(User user, Long id) {
         Pet pet = petRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
 
@@ -78,7 +78,7 @@ public class PetServiceImpl implements PetService {
 
     @Transactional
     @Override
-    public void deletePet(long id) {
+    public void deletePet(Long id) {
         Pet result = petRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
         petRepository.delete(result);

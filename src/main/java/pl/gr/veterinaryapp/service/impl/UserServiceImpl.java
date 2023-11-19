@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public VetAppUser getUser(long id) {
+    public VetAppUser getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
     }
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(long id) {
+    public void deleteUser(Long id) {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Wrong id."));
         userRepository.delete(user);

@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AnimalServiceTest {
 
-    private static final long ANIMAL_ID = 1L;
+    private static final Long ANIMAL_ID = 1L;
     @Mock
     private AnimalRepository animalRepository;
     @Mock

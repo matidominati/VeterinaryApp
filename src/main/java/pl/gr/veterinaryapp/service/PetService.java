@@ -2,17 +2,19 @@ package pl.gr.veterinaryapp.service;
 
 import org.springframework.security.core.userdetails.User;
 import pl.gr.veterinaryapp.model.dto.PetRequestDto;
+import pl.gr.veterinaryapp.model.dto.PetResponseDto;
+import pl.gr.veterinaryapp.model.dto.UserDto;
 import pl.gr.veterinaryapp.model.entity.Pet;
 
 import java.util.List;
 
 public interface PetService {
 
-    Pet getPetById(User user, long id);
+    PetResponseDto getPetById(UserDto user, Long id);
 
-    Pet createPet(User user, PetRequestDto petRequestDTO);
+    PetResponseDto createPet(UserDto user, PetRequestDto petRequestDTO);
 
-    void deletePet(long id);
+    void deletePet(Long id);
 
-    List<Pet> getAllPets(User user);
+    List<PetResponseDto> getAllPets(UserDto user);
 }

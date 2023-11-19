@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         excludeAutoConfiguration = {WebSecurityConfig.class})
 class ClientRestControllerTest {
 
-    private static final long ID = 1L;
+    private static final Long ID = 1L;
     private static final String CLIENT_NAME = "Konrad";
     private static final String CLIENT_SURNAME = "Gabrukiewicz";
 

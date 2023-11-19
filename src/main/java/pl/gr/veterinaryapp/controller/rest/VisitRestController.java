@@ -41,12 +41,12 @@ public class VisitRestController {
     private final VisitMapper mapper;
 
     @DeleteMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
-    public void delete(@PathVariable long id) {
+    public void delete(@PathVariable Long id) {
         visitService.deleteVisit(id);
     }
 
     @GetMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
-    public VisitResponseDto getVisit(@AuthenticationPrincipal User user, @PathVariable long id) {
+    public VisitResponseDto getVisit(@AuthenticationPrincipal User user, @PathVariable Long id) {
         var visit = mapper.map(visitService.getVisitById(user, id));
         addLinks(visit);
         return visit;
@@ -107,13 +107,13 @@ public class VisitRestController {
         return visit;
     }
 
-    public Link createVetLink(long id) {
+    public Link createVetLink(Long id) {
         return linkTo(VetRestController.class)
                 .slash(id)
                 .withRel("vet");
     }
 
-    public Link createPetLink(long id) {
+    public Link createPetLink(Long id) {
         return linkTo(PetRestController.class)
                 .slash(id)
                 .withRel("pet");

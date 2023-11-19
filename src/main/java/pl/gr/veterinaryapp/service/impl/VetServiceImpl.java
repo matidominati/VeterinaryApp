@@ -21,7 +21,7 @@ public class VetServiceImpl implements VetService {
     private final VetMapper mapper;
 
     @Override
-    public Vet getVetById(long id) {
+    public Vet getVetById(Long id) {
         return vetRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
     }
@@ -42,7 +42,7 @@ public class VetServiceImpl implements VetService {
 
     @Transactional
     @Override
-    public void deleteVet(long id) {
+    public void deleteVet(Long id) {
         Vet result = vetRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
         vetRepository.delete(result);

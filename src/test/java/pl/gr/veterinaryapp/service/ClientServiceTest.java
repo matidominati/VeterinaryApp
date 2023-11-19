@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ClientServiceTest {
 
-    private static final long CLIENT_ID = 1L;
+    private static final Long CLIENT_ID = 1L;
     private static final String CLIENT_NAME = "Konrad";
     private static final String CLIENT_SURNAME = "Gabrukiewicz";
     @Mock

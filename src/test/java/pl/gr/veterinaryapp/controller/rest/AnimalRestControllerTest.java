@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         excludeAutoConfiguration = {WebSecurityConfig.class})
 class AnimalRestControllerTest {
 
-    private static final long ID = 1L;
+    private static final Long ID = 1L;
     private static final String SPECIES = "CAT";
 
     @MockBean
@@ -86,7 +86,7 @@ class AnimalRestControllerTest {
                 .andExpect(jsonPath("$.id").value(ID))
                 .andExpect(jsonPath("$.species").value(SPECIES));
 
-        verify(animalService).getAnimalById(1);
+        verify(animalService).getAnimalById(1L);
     }
 
     @Test

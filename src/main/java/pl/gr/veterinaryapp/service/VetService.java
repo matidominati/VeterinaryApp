@@ -1,17 +1,18 @@
 package pl.gr.veterinaryapp.service;
 
 import pl.gr.veterinaryapp.model.dto.VetRequestDto;
+import pl.gr.veterinaryapp.model.dto.VetResponseDto;
 import pl.gr.veterinaryapp.model.entity.Vet;
 
 import java.util.List;
 
 public interface VetService {
 
-    Vet getVetById(long id);
+    VetResponseDto getVetById(Long id);
 
-    List<Vet> getAllVets();
+    List<VetResponseDto> getAllVets();
 
-    Vet createVet(VetRequestDto vetRequestDTO);
+    VetResponseDto createVet(VetRequestDto vetRequestDTO);
 
-    void deleteVet(long id);
+    void deleteVet(Long id);
 }

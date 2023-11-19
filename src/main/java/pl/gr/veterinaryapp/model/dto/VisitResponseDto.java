@@ -22,10 +22,10 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class VisitResponseDto extends RepresentationModel<VisitResponseDto> {
 
-    private long id;
-    private long vetId;
-    private long petId;
-    private long treatmentRoomId;
+    private Long id;
+    private Long vetId;
+    private Long petId;
+    private Long treatmentRoomId;
     private OffsetDateTime startDateTime;
     private Duration duration;
     private BigDecimal price;
@@ -36,10 +36,10 @@ public class VisitResponseDto extends RepresentationModel<VisitResponseDto> {
 
     public static class VisitResponseDtoBuilder {
 
-        private long id = 1;
-        private long vetId = 1;
-        private long petId = 1;
-        private long treatmentRoomId = 1;
+        private Long id = 1L;
+        private Long vetId = 1L;
+        private Long petId = 1L;
+        private Long treatmentRoomId = 1L;
         private OffsetDateTime startDateTime = OffsetDateTime.MIN;
         private Duration duration = Duration.ZERO;
         private BigDecimal price = BigDecimal.ZERO;

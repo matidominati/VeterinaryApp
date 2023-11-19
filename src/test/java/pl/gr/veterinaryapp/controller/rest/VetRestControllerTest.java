@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         excludeAutoConfiguration = {WebSecurityConfig.class})
 class VetRestControllerTest {
 
-    private static final long ID = 1L;
+    private static final Long ID = 1L;
     private static final String VET_NAME = "Kazimierz";
     private static final String VET_SURNAME = "Wieloglowy";
     private static final String IMAGE_URL = "url.jpg";

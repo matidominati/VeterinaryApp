@@ -36,10 +36,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PetServiceTest {
 
-    private static final long PET_ID = 1L;
+    private static final Long PET_ID = 1L;
     private static final String PET_NAME = "Puszek";
-    private static final long ANIMAL_ID = 1L;
-    private static final long CLIENT_ID = 1L;
+    private static final Long ANIMAL_ID = 1L;
+    private static final Long CLIENT_ID = 1L;
     private static final User USER = new User("name", "passwd", Collections.emptySet());
 
     @Mock
@@ -222,7 +222,7 @@ class PetServiceTest {
         verifyNoInteractions(petRepository);
     }
 
-    private PetRequestDto preparePetRequestDto(String petName, long animalId, long clientId, LocalDate birthDate) {
+    private PetRequestDto preparePetRequestDto(String petName, Long animalId, Long clientId, LocalDate birthDate) {
         PetRequestDto request = new PetRequestDto();
         request.setName(petName);
         request.setAnimalId(animalId);

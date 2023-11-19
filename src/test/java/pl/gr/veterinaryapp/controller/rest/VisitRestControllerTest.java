@@ -65,7 +65,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         excludeAutoConfiguration = {WebSecurityConfig.class})
 class VisitRestControllerTest {
 
-    private static final long ID = 1L;
+    private static final Long ID = 1L;
 
     @MockBean
     private VisitService visitService;
@@ -92,7 +92,7 @@ class VisitRestControllerTest {
     @ParameterizedTest
     @MethodSource("visitResponseDataProvider")
     @WithMockUser
-    void getVisit_CorrectData_Returned(long id, long vetId, long petId, long treatmentRoomId,
+    void getVisit_CorrectData_Returned(Long id, Long vetId, Long petId, Long treatmentRoomId,
                                        OffsetDateTime startDateTime, Duration duration,
                                        BigDecimal price, VisitType visitType, OperationType operationType,
                                        VisitStatus visitStatus) throws Exception {
@@ -126,7 +126,7 @@ class VisitRestControllerTest {
     @ParameterizedTest
     @MethodSource("visitResponseDataProvider")
     @WithMockUser
-    void createVisit_CreateData_Created(long id, long vetId, long petId, long treatmentRoomId,
+    void createVisit_CreateData_Created(Long id, Long vetId, Long petId, Long treatmentRoomId,
                                         OffsetDateTime startDateTime, Duration duration,
                                         BigDecimal price, VisitType visitType, OperationType operationType,
                                         VisitStatus visitStatus) throws Exception {
@@ -172,7 +172,7 @@ class VisitRestControllerTest {
     @ParameterizedTest
     @MethodSource("visitResponseDataProvider")
     @WithMockUser
-    void getAllVisits_VisitsExist_Returned(long id, long vetId, long petId, long treatmentRoomId,
+    void getAllVisits_VisitsExist_Returned(Long id, Long vetId, Long petId, Long treatmentRoomId,
                                            OffsetDateTime startDateTime, Duration duration,
                                            BigDecimal price, VisitType visitType, OperationType operationType,
                                            VisitStatus visitStatus) throws Exception {
