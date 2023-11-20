@@ -64,13 +64,11 @@ class ClientRestControllerTest {
         clientRequest.setName(CLIENT_NAME);
         clientRequest.setSurname(CLIENT_SURNAME);
 
-        var client = new Client();
-
         var clientResponse = new ClientResponseDto();
         clientResponse.setName(CLIENT_NAME);
         clientResponse.setSurname(CLIENT_SURNAME);
 
-        when(clientService.createClient(any(ClientRequestDto.class))).thenReturn(client);
+        when(clientService.createClient(any(ClientRequestDto.class))).thenReturn(clientResponse);
         when(clientMapper.map(any(Client.class))).thenReturn(clientResponse);
 
         mockMvc.perform(post("/api/clients")
@@ -82,7 +80,6 @@ class ClientRestControllerTest {
                 .andExpect(jsonPath("$.surname").value(CLIENT_SURNAME));
 
         verify(clientService).createClient(eq(clientRequest));
-        verify(clientMapper).map(eq(client));
     }
 
     @Test
@@ -94,8 +91,7 @@ class ClientRestControllerTest {
         clientResponse.setName(CLIENT_NAME);
         clientResponse.setSurname(CLIENT_SURNAME);
 
-        when(clientService.getClientById(anyLong())).thenReturn(client);
-        when(clientMapper.map(any(Client.class))).thenReturn(clientResponse);
+        when(clientService.getClientById(anyLong())).thenReturn(clientResponse);
 
         mockMvc.perform(get("/api/clients/{id}", ID)
                 .accept(MediaType.APPLICATION_JSON))
@@ -110,14 +106,13 @@ class ClientRestControllerTest {
     @Test
     @WithMockUser
     void getAllClients_CorrectData_Returned() throws Exception {
-        var clients = List.of(new Client(), new Client());
 
         var clientResponse = new ClientResponseDto();
         clientResponse.setName(CLIENT_NAME);
         clientResponse.setSurname(CLIENT_SURNAME);
+        List<ClientResponseDto> clients = List.of(clientResponse, clientResponse, clientResponse);
 
         when(clientService.getAllClients()).thenReturn(clients);
-        when(clientMapper.mapAsList(anyCollection())).thenReturn(List.of(clientResponse, clientResponse));
 
         mockMvc.perform(get("/api/clients")
                 .accept(MediaType.APPLICATION_JSON))
@@ -128,6 +123,5 @@ class ClientRestControllerTest {
                 .andExpect(jsonPath("$.[1].surname").value(CLIENT_SURNAME));
 
         verify(clientService).getAllClients();
-        verify(clientMapper).mapAsList(eq(clients));
     }
 }
