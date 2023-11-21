@@ -82,8 +82,7 @@ class PetRestControllerTest {
 
         var petResponse = preparePetResponse(pet);
 
-        when(petService.createPet(any(User.class), any(PetRequestDto.class))).thenReturn(pet);
-        when(petMapper.map(any(Pet.class))).thenReturn(petResponse);
+        when(petService.createPet(any(User.class), any(PetRequestDto.class))).thenReturn(petResponse);
 
         var result = mockMvc.perform(post("/api/pets")
                 .with(csrf())
@@ -108,8 +107,7 @@ class PetRestControllerTest {
 
         var petResponse = preparePetResponse(pet);
 
-        when(petService.getPetById(any(User.class), anyLong())).thenReturn(pet);
-        when(petMapper.map(any(Pet.class))).thenReturn(petResponse);
+        when(petService.getPetById(any(User.class), anyLong())).thenReturn(petResponse);
 
         var result = mockMvc.perform(get("/api/pets/{id}", ID)
                 .contentType(MediaType.APPLICATION_JSON));

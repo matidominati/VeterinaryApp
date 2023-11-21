@@ -22,7 +22,7 @@ public class AuthenticationController {
     private final TokenServiceImpl tokenService;
 
     @PostMapping("/login")
-    public AuthToken register(@RequestBody LoginUser loginUser) throws AuthenticationException {
+    public AuthToken login(@RequestBody LoginUser loginUser) throws AuthenticationException {
         return tokenService.register(loginUser);
     }
 
@@ -32,3 +32,4 @@ public class AuthenticationController {
         tokenService.logout(tokenHeader);
     }
 }
+

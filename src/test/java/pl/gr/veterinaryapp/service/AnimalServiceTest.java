@@ -1,9 +1,12 @@
 package pl.gr.veterinaryapp.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
@@ -31,27 +34,31 @@ import static org.mockito.Mockito.when;
 class AnimalServiceTest {
 
     private static final Long ANIMAL_ID = 1L;
-    @Mock
     private AnimalRepository animalRepository;
-    @Mock
     private AnimalMapper mapper;
-    @InjectMocks
     private AnimalServiceImpl animalService;
+
+    @BeforeEach
+    void setup() {
+        this.animalRepository = Mockito.mock(AnimalRepository.class);
+        this.mapper = Mappers.getMapper(AnimalMapper.class);
+        this.animalService = new AnimalServiceImpl(animalRepository, mapper);
+    }
 
     @Test
     void getAnimalById_WithCorrectId_Returned() {
         Animal animal = new Animal();
 
         when(animalRepository.findById(anyLong())).thenReturn(Optional.of(animal));
+        var dto = mapper.mapToDto(animal);
 
         var result = animalService.getAnimalById(ANIMAL_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(animal);
+                .isEqualTo(dto);
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -65,7 +72,6 @@ class AnimalServiceTest {
                 .hasMessage("Wrong id.");
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
-        verifyNoInteractions(mapper);
     }
 
     @Test
