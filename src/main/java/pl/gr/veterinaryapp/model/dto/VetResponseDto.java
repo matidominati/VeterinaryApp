@@ -1,7 +1,10 @@
 package pl.gr.veterinaryapp.model.dto;
 
+import lombok.Data;
+
 import java.time.OffsetTime;
 
+@Data
 public class VetResponseDto {
 
     private Long id;

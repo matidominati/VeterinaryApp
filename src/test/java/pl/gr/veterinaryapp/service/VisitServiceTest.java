@@ -1,14 +1,17 @@
 package pl.gr.veterinaryapp.service;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.User;
 import pl.gr.veterinaryapp.common.OperationType;
@@ -16,6 +19,7 @@ import pl.gr.veterinaryapp.common.VisitStatus;
 import pl.gr.veterinaryapp.common.VisitType;
 import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
+import pl.gr.veterinaryapp.mapper.VisitMapper;
 import pl.gr.veterinaryapp.model.dto.AvailableVisitDto;
 import pl.gr.veterinaryapp.model.dto.VisitEditDto;
 import pl.gr.veterinaryapp.model.dto.VisitRequestDto;
@@ -69,24 +73,30 @@ class VisitServiceTest {
     private static final String VISIT_DESCRIPTION = "description";
     private static final User USER = new User("name", "passwd", Collections.emptySet());
 
-    @Mock
-    private VisitRepository visitRepository;
-    @Mock
-    private PetRepository petRepository;
-    @Mock
-    private VetRepository vetRepository;
-    @Mock
-    private TreatmentRoomRepository treatmentRoomRepository;
-    @Mock
-    private Clock clock;
-    @InjectMocks
-    private VisitServiceImpl visitService;
 
+    private VisitRepository visitRepository;
+    private PetRepository petRepository;
+    private VetRepository vetRepository;
+    private TreatmentRoomRepository treatmentRoomRepository;
+    private Clock clock;
+    private VisitServiceImpl visitService;
     private static Clock fixedClock;
+    private VisitMapper mapper;
 
     @BeforeAll
     static void setupTest() {
         fixedClock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+    }
+
+    @BeforeEach
+    void setup() {
+        this.clock = Mockito.mock(Clock.class);
+        this.petRepository = Mockito.mock(PetRepository.class);
+        this.treatmentRoomRepository = Mockito.mock(TreatmentRoomRepository.class);
+        this.visitRepository = Mockito.mock(VisitRepository.class);
+        this.vetRepository = Mockito.mock(VetRepository.class);
+        this.mapper = Mappers.getMapper(VisitMapper.class);
+        this.visitService = new VisitServiceImpl(visitRepository, vetRepository, petRepository, treatmentRoomRepository, clock, mapper);
     }
 
     @Test
@@ -125,11 +135,12 @@ class VisitServiceTest {
 
         when(visitRepository.findById(anyLong())).thenReturn(Optional.of(visit));
 
+        var visitDto = mapper.map(visit);
         var result = visitService.getVisitById(USER, VISIT_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(visit);
+                .isEqualTo(visitDto);
 
         verify(visitRepository).findById(eq(VISIT_ID));
         verifyNoInteractions(petRepository, vetRepository, treatmentRoomRepository);
@@ -199,10 +210,9 @@ class VisitServiceTest {
 
         assertThat(result)
                 .isNotNull()
-                .matches(visit -> Objects.equals(visit.getId(), VISIT_ID))
-                .matches(visit -> Objects.equals(visit.getPet(), pet))
-                .matches(visit -> Objects.equals(visit.getVet(), vet))
-                .matches(visit -> Objects.equals(visit.getTreatmentRoom(), treatmentRoom))
+                .matches(visit -> Objects.equals(visit.getId(),result.getId()))
+                .matches(visit -> Objects.equals(visit.getPetId(), result.getPetId()))
+                .matches(visit -> Objects.equals(visit.getVetId(), result.getVetId()))
                 .matches(visit -> Objects.equals(visit.getStartDateTime(), startDateTime))
                 .matches(visit -> Objects.equals(visit.getDuration(), duration))
                 .matches(visit -> Objects.equals(visit.getPrice(), request.getPrice()))
