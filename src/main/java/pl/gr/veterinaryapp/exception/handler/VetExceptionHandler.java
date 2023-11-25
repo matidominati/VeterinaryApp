@@ -1,5 +1,6 @@
 package pl.gr.veterinaryapp.exception.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +12,14 @@ import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
 
 @ControllerAdvice
+@Slf4j
 public class VetExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value
             = IncorrectDataException.class)
     protected ResponseEntity<Object> incorrectData(
             IncorrectDataException ex, WebRequest request) {
+        log.error("Incorrect Data Exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
@@ -25,6 +28,7 @@ public class VetExceptionHandler extends ResponseEntityExceptionHandler {
             = ResourceNotFoundException.class)
     protected ResponseEntity<Object> resourceNotFound(
             ResourceNotFoundException ex, WebRequest request) {
+        log.error("Resource Not Found Exception: {}", ex.getMessage(), ex);
         return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
