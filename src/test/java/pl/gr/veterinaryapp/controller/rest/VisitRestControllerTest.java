@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import pl.gr.veterinaryapp.common.OperationType;
@@ -43,17 +42,11 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,7 +76,7 @@ class VisitRestControllerTest {
 
     private static Stream<Arguments> visitResponseDataProvider() {
         return Stream.of(
-                Arguments.of(ID, 2, 2, 1, OffsetDateTime.of(LocalDateTime.of(2020, 11, 3, 5, 30), ZoneOffset.UTC),
+                Arguments.of(ID, 2L, 2L, 1L, OffsetDateTime.of(LocalDateTime.of(2020, 11, 3, 5, 30), ZoneOffset.UTC),
                         Duration.ofMinutes(30), BigDecimal.valueOf(100), VisitType.STATIONARY
                         , OperationType.OPERATION, VisitStatus.SCHEDULED)
         );
@@ -109,10 +102,7 @@ class VisitRestControllerTest {
                 .visitStatus(visitStatus)
                 .build();
 
-        Visit visit = new Visit();
-
-        when(visitService.getVisitById(any(User.class), anyLong())).thenReturn(visit);
-        when(visitMapper.map(any(Visit.class))).thenReturn(visitResponse);
+        when(visitService.getVisitById(any(User.class), anyLong())).thenReturn(visitResponse);
 
         var resultActions = mockMvc.perform(get("/api/visits/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON));
@@ -120,7 +110,6 @@ class VisitRestControllerTest {
         verifyJson(resultActions, visitResponse);
 
         verify(visitService).getVisitById(any(User.class), eq(id));
-        verify(visitMapper).map(eq(visit));
     }
 
     @ParameterizedTest
@@ -153,11 +142,8 @@ class VisitRestControllerTest {
                 .visitStatus(visitStatus)
                 .build();
 
-        var visit = new Visit();
 
-        when(visitService.createVisit(any(User.class), any(VisitRequestDto.class))).thenReturn(visit);
-        when(visitMapper.map(any(Visit.class))).thenReturn(visitResponse);
-
+        when(visitService.createVisit(any(User.class), any(VisitRequestDto.class))).thenReturn(visitResponse);
         var resultActions = mockMvc.perform(post("/api/visits")
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(visitRequest))
@@ -166,7 +152,6 @@ class VisitRestControllerTest {
         verifyJson(resultActions, visitResponse);
 
         verify(visitService).createVisit(any(User.class), eq(visitRequest));
-        verify(visitMapper).map(eq(visit));
     }
 
     @ParameterizedTest
@@ -192,8 +177,7 @@ class VisitRestControllerTest {
 
         List<VisitResponseDto> visits = List.of(visitResponse, visitResponse);
 
-        when(visitService.getAllVisits(any(User.class))).thenReturn(Collections.emptyList());
-        when(visitMapper.mapAsList(anyList())).thenReturn(visits);
+        when(visitService.getAllVisits(any(User.class))).thenReturn(visits);
 
         var resultActions = mockMvc.perform(get("/api/visits")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -203,7 +187,6 @@ class VisitRestControllerTest {
         }
 
         verify(visitService).getAllVisits(any(User.class));
-        verify(visitMapper).mapAsList(Collections.emptyList());
     }
 
     @Test
@@ -215,9 +198,9 @@ class VisitRestControllerTest {
 
         var visitResponse = VisitResponseDto.builder()
                 .id(ID)
-                .vetId(1)
-                .petId(1)
-                .treatmentRoomId(1)
+                .vetId(1L)
+                .petId(1L)
+                .treatmentRoomId(1L)
                 .startDateTime(OffsetDateTime.of(LocalDateTime.of(2020, 11, 3, 5, 30), ZoneOffset.UTC))
                 .duration(Duration.ofMinutes(30))
                 .price(BigDecimal.valueOf(100))
@@ -226,8 +209,7 @@ class VisitRestControllerTest {
                 .visitStatus(VisitStatus.SCHEDULED)
                 .build();
 
-        when(visitService.finalizeVisit(any(VisitEditDto.class))).thenReturn(visit);
-        when(visitMapper.map(any(Visit.class))).thenReturn(visitResponse);
+        when(visitService.finalizeVisit(any(VisitEditDto.class))).thenReturn(visitResponse);
 
         var resultActions = mockMvc.perform(patch("/api/visits")
                 .with(csrf())
@@ -237,7 +219,6 @@ class VisitRestControllerTest {
         verifyJson(resultActions, visitResponse);
 
         verify(visitService).finalizeVisit(eq(visitEditDto));
-        verify(visitMapper).map(eq(visit));
     }
 
     @Test

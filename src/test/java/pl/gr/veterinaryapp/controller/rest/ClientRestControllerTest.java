@@ -100,7 +100,6 @@ class ClientRestControllerTest {
                 .andExpect(jsonPath("$.surname").value(CLIENT_SURNAME));
 
         verify(clientService).getClientById(ID);
-        verify(clientMapper).map(eq(client));
     }
 
     @Test

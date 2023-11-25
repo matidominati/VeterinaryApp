@@ -31,20 +31,11 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = PetRestController.class,
         excludeFilters = {
@@ -91,7 +82,6 @@ class PetRestControllerTest {
 
         verifyJson(result, petResponse);
 
-        verify(petMapper).map(eq(pet));
         verify(petService).createPet(any(User.class), eq(petRequest));
     }
 
@@ -114,7 +104,6 @@ class PetRestControllerTest {
 
         verifyJson(result, petResponse);
 
-        verify(petMapper).map(eq(pet));
         verify(petService).getPetById(any(User.class), eq(ID));
     }
 
@@ -122,8 +111,8 @@ class PetRestControllerTest {
     @WithMockUser
     void deletePet_petDeleted_StatusOk() throws Exception {
         mockMvc.perform(delete("/api/pets/{id}", ID)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         verify(petService).deletePet(ID);
@@ -148,11 +137,10 @@ class PetRestControllerTest {
             petResponses.add(petResponse);
         }
 
-        when(petMapper.mapAsList(anyList())).thenReturn(petResponses);
-        when(petService.getAllPets(any(User.class))).thenReturn(pets);
+        when(petService.getAllPets(any(User.class))).thenReturn(petResponses);
 
         var result = mockMvc.perform(get("/api/pets", ID)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         for (int i = 0; i < 2; i++) {
@@ -160,7 +148,6 @@ class PetRestControllerTest {
         }
 
         verify(petService).getAllPets(any(User.class));
-        verify(petMapper).mapAsList(eq(pets));
     }
 
     private void verifyJson(ResultActions result, PetResponseDto petResponse) throws Exception {

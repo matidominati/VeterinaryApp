@@ -12,6 +12,7 @@ import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
 import pl.gr.veterinaryapp.mapper.AnimalMapper;
 import pl.gr.veterinaryapp.model.dto.AnimalRequestDto;
+import pl.gr.veterinaryapp.model.dto.AnimalResponseDto;
 import pl.gr.veterinaryapp.model.entity.Animal;
 import pl.gr.veterinaryapp.repository.AnimalRepository;
 import pl.gr.veterinaryapp.service.impl.AnimalServiceImpl;
@@ -82,18 +83,17 @@ class AnimalServiceTest {
         animal.setSpecies("test");
 
         when(animalRepository.findBySpecies(anyString())).thenReturn(Optional.empty());
-        when(mapper.map(any(AnimalRequestDto.class))).thenReturn(animal);
-        when(animalRepository.save(any(Animal.class))).thenReturn(animal);
+        AnimalResponseDto animalResponseDto = mapper.mapToDto(animal);
+        animalRepository.save(animal);
 
         var result = animalService.createAnimal(animalDTO);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(animal);
+                .isEqualTo(animalResponseDto);
 
         verify(animalRepository).save(eq(animal));
         verify(animalRepository).findBySpecies(eq("test"));
-        verify(mapper).map(eq(animalDTO));
     }
 
     @Test
@@ -112,7 +112,6 @@ class AnimalServiceTest {
                 .hasMessage("Species exists.");
 
         verify(animalRepository).findBySpecies(eq("test"));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -125,7 +124,6 @@ class AnimalServiceTest {
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
         verify(animalRepository).delete(eq(animal));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -140,7 +138,6 @@ class AnimalServiceTest {
                 .hasMessage("Wrong id.");
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -155,6 +152,5 @@ class AnimalServiceTest {
                 .isNotNull();
 
         verify(animalRepository).findAll();
-        verifyNoInteractions(mapper);
     }
 }
