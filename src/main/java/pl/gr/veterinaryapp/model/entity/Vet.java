@@ -1,16 +1,15 @@
 package pl.gr.veterinaryapp.model.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "vets")
 public class Vet {
@@ -28,4 +27,17 @@ public class Vet {
     private OffsetTime workStartTime;
     @NotNull
     private OffsetTime workEndTime;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vet vet = (Vet) o;
+        return id != null && Objects.equals(id, vet.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

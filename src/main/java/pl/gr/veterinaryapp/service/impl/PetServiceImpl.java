@@ -5,9 +5,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
+import pl.gr.veterinaryapp.mapper.PetMapper;
 import pl.gr.veterinaryapp.model.dto.PetRequestDto;
+import pl.gr.veterinaryapp.model.dto.PetResponseDto;
 import pl.gr.veterinaryapp.model.entity.Animal;
 import pl.gr.veterinaryapp.model.entity.Client;
 import pl.gr.veterinaryapp.model.entity.Pet;
@@ -19,6 +20,8 @@ import pl.gr.veterinaryapp.service.PetService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static pl.gr.veterinaryapp.service.validator.DataValidator.*;
+
 @RequiredArgsConstructor
 @Service
 public class PetServiceImpl implements PetService {
@@ -26,61 +29,49 @@ public class PetServiceImpl implements PetService {
     private final PetRepository petRepository;
     private final ClientRepository clientRepository;
     private final AnimalRepository animalRepository;
+    private final PetMapper mapper;
 
     @Override
-    public List<Pet> getAllPets(User user) {
+    public List<PetResponseDto> getAllPets(User user) {
         return petRepository.findAll()
                 .stream()
                 .filter(pet -> isUserAuthorized(user, pet.getClient()))
+                .map(mapper::map)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Pet getPetById(User user, long id) {
-        Pet pet = petRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
-
+    public PetResponseDto getPetById(User user, Long id) {
+        Pet pet = findByIdOrThrow(id, petRepository);
         if (!isUserAuthorized(user, pet.getClient())) {
             throw new ResourceNotFoundException("Wrong id.");
         }
-
-        return pet;
+        return mapper.map(pet);
     }
 
     @Transactional
     @Override
-    public Pet createPet(User user, PetRequestDto petRequestDto) {
-        if (petRequestDto.getName() == null) {
-            throw new IncorrectDataException("Name cannot be null.");
-        }
-
-        if (petRequestDto.getBirthDate() == null) {
-            throw new IncorrectDataException("Birth date cannot be null.");
-        }
-
-        Animal animal = animalRepository.findById(petRequestDto.getAnimalId())
-                .orElseThrow(() -> new IncorrectDataException("Wrong animal id."));
-        Client client = clientRepository.findById(petRequestDto.getClientId())
-                .orElseThrow(() -> new IncorrectDataException("Wrong client id."));
-
+    public PetResponseDto createPet(User user, PetRequestDto petRequestDto) {
+        validateName(petRequestDto.getName());
+        validateBirthDate(petRequestDto.getBirthDate());
+        Animal animal = findByIdOrThrow(petRequestDto.getAnimalId(), animalRepository);
+        Client client = findByIdOrThrow(petRequestDto.getClientId(), clientRepository);
         if (!isUserAuthorized(user, client)) {
             throw new ResourceNotFoundException("User don't have access to this pet");
         }
-
         var newPet = new Pet();
         newPet.setName(petRequestDto.getName());
         newPet.setBirthDate(petRequestDto.getBirthDate());
         newPet.setAnimal(animal);
         newPet.setClient(client);
-
-        return petRepository.save(newPet);
+        petRepository.save(newPet);
+        return mapper.map(newPet);
     }
 
     @Transactional
     @Override
-    public void deletePet(long id) {
-        Pet result = petRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
+    public void deletePet(Long id) {
+        Pet result = findByIdOrThrow(id, petRepository);
         petRepository.delete(result);
     }
 

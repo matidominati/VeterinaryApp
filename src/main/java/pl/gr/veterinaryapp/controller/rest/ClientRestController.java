@@ -21,25 +21,24 @@ import java.util.List;
 public class ClientRestController {
 
     private final ClientService clientService;
-    private final ClientMapper mapper;
 
     @GetMapping("/{id}")
-    public ClientResponseDto getClient(@PathVariable long id) {
-        return mapper.map(clientService.getClientById(id));
+    public ClientResponseDto getClient(@PathVariable Long id) {
+        return clientService.getClientById(id);
     }
 
     @PostMapping
     public ClientResponseDto createClient(@RequestBody ClientRequestDto clientRequestDTO) {
-        return mapper.map(clientService.createClient(clientRequestDTO));
+        return clientService.createClient(clientRequestDTO);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id) {
+    public void delete(@PathVariable Long id) {
         clientService.deleteClient(id);
     }
 
     @GetMapping
     public List<ClientResponseDto> getAllClients() {
-        return mapper.mapAsList(clientService.getAllClients());
+        return clientService.getAllClients();
     }
 }

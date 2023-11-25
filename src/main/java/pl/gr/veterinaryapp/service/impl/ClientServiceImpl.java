@@ -3,10 +3,10 @@ package pl.gr.veterinaryapp.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
 import pl.gr.veterinaryapp.mapper.ClientMapper;
 import pl.gr.veterinaryapp.model.dto.ClientRequestDto;
+import pl.gr.veterinaryapp.model.dto.ClientResponseDto;
 import pl.gr.veterinaryapp.model.entity.Client;
 import pl.gr.veterinaryapp.model.entity.VetAppUser;
 import pl.gr.veterinaryapp.repository.ClientRepository;
@@ -14,6 +14,9 @@ import pl.gr.veterinaryapp.repository.UserRepository;
 import pl.gr.veterinaryapp.service.ClientService;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static pl.gr.veterinaryapp.service.validator.DataValidator.*;
 
 @RequiredArgsConstructor
 @Service
@@ -24,36 +27,33 @@ public class ClientServiceImpl implements ClientService {
     private final UserRepository userRepository;
 
     @Override
-    public Client getClientById(long id) {
-        System.out.println("XXX");
-        return clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
+    public ClientResponseDto getClientById(Long id) {
+        Client client = findByIdOrThrow(id, clientRepository);
+        return mapper.map(client);
     }
 
     @Override
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
+    public List<ClientResponseDto> getAllClients() {
+        return clientRepository.findAll().stream()
+                .map(mapper::map)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
-    public Client createClient(ClientRequestDto clientRequestDTO) {
-        if (clientRequestDTO.getSurname() == null || clientRequestDTO.getName() == null) {
-            throw new IncorrectDataException("Name and Surname should not be null.");
-        }
-
+    public ClientResponseDto createClient(ClientRequestDto clientRequestDTO) {
+        validateNameOrSurname(clientRequestDTO.getName(), clientRequestDTO.getSurname());
         VetAppUser user = userRepository.findByUsername(clientRequestDTO.getUsername())
-                .orElse(null);
-
+                .orElseThrow(() -> new  ResourceNotFoundException("User not found for username: " + clientRequestDTO.getUsername()));
         Client client = mapper.map(clientRequestDTO);
         client.setUser(user);
-
-        return clientRepository.save(client);
+        clientRepository.save(client);
+        return mapper.map(client);
     }
 
     @Transactional
     @Override
-    public void deleteClient(long id) {
+    public void deleteClient(Long id) {
         Client result = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wrong id."));
         clientRepository.delete(result);

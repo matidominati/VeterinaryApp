@@ -1,14 +1,18 @@
 package pl.gr.veterinaryapp.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
 import pl.gr.veterinaryapp.mapper.AnimalMapper;
 import pl.gr.veterinaryapp.model.dto.AnimalRequestDto;
+import pl.gr.veterinaryapp.model.dto.AnimalResponseDto;
 import pl.gr.veterinaryapp.model.entity.Animal;
 import pl.gr.veterinaryapp.repository.AnimalRepository;
 import pl.gr.veterinaryapp.service.impl.AnimalServiceImpl;
@@ -30,28 +34,32 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AnimalServiceTest {
 
-    private static final long ANIMAL_ID = 1L;
-    @Mock
+    private static final Long ANIMAL_ID = 1L;
     private AnimalRepository animalRepository;
-    @Mock
     private AnimalMapper mapper;
-    @InjectMocks
     private AnimalServiceImpl animalService;
+
+    @BeforeEach
+    void setup() {
+        this.animalRepository = Mockito.mock(AnimalRepository.class);
+        this.mapper = Mappers.getMapper(AnimalMapper.class);
+        this.animalService = new AnimalServiceImpl(animalRepository, mapper);
+    }
 
     @Test
     void getAnimalById_WithCorrectId_Returned() {
         Animal animal = new Animal();
 
         when(animalRepository.findById(anyLong())).thenReturn(Optional.of(animal));
+        var dto = mapper.mapToDto(animal);
 
         var result = animalService.getAnimalById(ANIMAL_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(animal);
+                .isEqualTo(dto);
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -65,7 +73,6 @@ class AnimalServiceTest {
                 .hasMessage("Wrong id.");
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -76,18 +83,17 @@ class AnimalServiceTest {
         animal.setSpecies("test");
 
         when(animalRepository.findBySpecies(anyString())).thenReturn(Optional.empty());
-        when(mapper.map(any(AnimalRequestDto.class))).thenReturn(animal);
-        when(animalRepository.save(any(Animal.class))).thenReturn(animal);
+        AnimalResponseDto animalResponseDto = mapper.mapToDto(animal);
+        animalRepository.save(animal);
 
         var result = animalService.createAnimal(animalDTO);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(animal);
+                .isEqualTo(animalResponseDto);
 
         verify(animalRepository).save(eq(animal));
         verify(animalRepository).findBySpecies(eq("test"));
-        verify(mapper).map(eq(animalDTO));
     }
 
     @Test
@@ -106,7 +112,6 @@ class AnimalServiceTest {
                 .hasMessage("Species exists.");
 
         verify(animalRepository).findBySpecies(eq("test"));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -119,7 +124,6 @@ class AnimalServiceTest {
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
         verify(animalRepository).delete(eq(animal));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -134,7 +138,6 @@ class AnimalServiceTest {
                 .hasMessage("Wrong id.");
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
-        verifyNoInteractions(mapper);
     }
 
     @Test
@@ -149,6 +152,5 @@ class AnimalServiceTest {
                 .isNotNull();
 
         verify(animalRepository).findAll();
-        verifyNoInteractions(mapper);
     }
 }

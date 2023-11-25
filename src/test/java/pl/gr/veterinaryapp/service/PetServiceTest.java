@@ -1,14 +1,19 @@
 package pl.gr.veterinaryapp.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.User;
 import pl.gr.veterinaryapp.exception.IncorrectDataException;
 import pl.gr.veterinaryapp.exception.ResourceNotFoundException;
+import pl.gr.veterinaryapp.mapper.PetMapper;
 import pl.gr.veterinaryapp.model.dto.PetRequestDto;
+import pl.gr.veterinaryapp.model.dto.PetResponseDto;
 import pl.gr.veterinaryapp.model.entity.Animal;
 import pl.gr.veterinaryapp.model.entity.Client;
 import pl.gr.veterinaryapp.model.entity.Pet;
@@ -36,20 +41,26 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PetServiceTest {
 
-    private static final long PET_ID = 1L;
+    private static final Long PET_ID = 1L;
     private static final String PET_NAME = "Puszek";
-    private static final long ANIMAL_ID = 1L;
-    private static final long CLIENT_ID = 1L;
+    private static final Long ANIMAL_ID = 1L;
+    private static final Long CLIENT_ID = 1L;
     private static final User USER = new User("name", "passwd", Collections.emptySet());
 
-    @Mock
     private PetRepository petRepository;
-    @Mock
     private ClientRepository clientRepository;
-    @Mock
     private AnimalRepository animalRepository;
-    @InjectMocks
     private PetServiceImpl petService;
+    private PetMapper petMapper;
+
+    @BeforeEach
+    void setup() {
+        this.petRepository = Mockito.mock(PetRepository.class);
+        this.clientRepository = Mockito.mock(ClientRepository.class);
+        this.animalRepository = Mockito.mock(AnimalRepository.class);
+        this.petMapper = Mappers.getMapper(PetMapper.class);
+        this.petService = new PetServiceImpl(petRepository, clientRepository, animalRepository, petMapper);
+    }
 
     @Test
     void deletePetById_WithCorrectId_Deleted() {
@@ -84,11 +95,12 @@ class PetServiceTest {
 
         when(petRepository.findById(anyLong())).thenReturn(Optional.of(pet));
 
+        PetResponseDto petResponseDto = petMapper.map(pet);
         var result = petService.getPetById(USER, PET_ID);
 
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(pet);
+                .isEqualTo(petResponseDto);
 
         verify(petRepository).findById(eq(PET_ID));
         verifyNoInteractions(clientRepository, animalRepository);
@@ -147,8 +159,6 @@ class PetServiceTest {
         assertThat(result)
                 .isNotNull()
                 .matches(pet -> Objects.equals(pet.getId(), PET_ID))
-                .matches(pet -> Objects.equals(pet.getAnimal(), animal))
-                .matches(pet -> Objects.equals(pet.getClient(), client))
                 .matches(pet -> Objects.equals(pet.getBirthDate(), birthDate));
 
         verify(clientRepository).findById(eq(CLIENT_ID));
@@ -179,7 +189,7 @@ class PetServiceTest {
                 catchThrowableOfType(() -> petService.createPet(USER, request), IncorrectDataException.class);
 
         assertThat(thrown)
-                .hasMessage("Birth date cannot be null.");
+                .hasMessage("Incorrect birth date provided");
 
         verifyNoInteractions(petRepository, animalRepository, clientRepository);
     }
@@ -192,11 +202,11 @@ class PetServiceTest {
 
         when(animalRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        IncorrectDataException thrown =
-                catchThrowableOfType(() -> petService.createPet(USER, request), IncorrectDataException.class);
+        ResourceNotFoundException thrown =
+                catchThrowableOfType(() -> petService.createPet(USER, request), ResourceNotFoundException.class);
 
         assertThat(thrown)
-                .hasMessage("Wrong animal id.");
+                .hasMessage("Wrong id.");
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
         verifyNoInteractions(petRepository, clientRepository);
@@ -211,18 +221,18 @@ class PetServiceTest {
         when(animalRepository.findById(anyLong())).thenReturn(Optional.of(new Animal()));
         when(clientRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        IncorrectDataException thrown =
-                catchThrowableOfType(() -> petService.createPet(USER, request), IncorrectDataException.class);
+        ResourceNotFoundException thrown =
+                catchThrowableOfType(() -> petService.createPet(USER, request), ResourceNotFoundException.class);
 
         assertThat(thrown)
-                .hasMessage("Wrong client id.");
+                .hasMessage("Wrong id.");
 
         verify(animalRepository).findById(eq(ANIMAL_ID));
         verify(clientRepository).findById(eq(CLIENT_ID));
         verifyNoInteractions(petRepository);
     }
 
-    private PetRequestDto preparePetRequestDto(String petName, long animalId, long clientId, LocalDate birthDate) {
+    private PetRequestDto preparePetRequestDto(String petName, Long animalId, Long clientId, LocalDate birthDate) {
         PetRequestDto request = new PetRequestDto();
         request.setName(petName);
         request.setAnimalId(animalId);
